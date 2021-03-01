@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="organa",
-    version="0.1.0",
+    version="0.1.1",
     author="Cody Lewis",
     description="HTTP-based Federated Learning",
     long_description=LONG_DESCRIPTION,

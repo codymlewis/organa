@@ -44,7 +44,7 @@ class Server:
         self.grads[msg['id']] = msg['grads']
         self.grad_count += 1
         if self.grad_count >= self.k:
-            self.fit_fun(self.net, self.grads, None)
+            self.fit_fun(self.net, self.grads)
             self.epoch += 1
             self.grad_count = 0
         return bottle.HTTPResponse(

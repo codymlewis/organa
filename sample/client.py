@@ -18,7 +18,7 @@ class ClientThread(Thread):
     def run(self):
         while self.client.epoch < self.server_epochs:
             while not self.client.get():
-                time.sleep(0.5)
+                time.sleep(0.1)
             loss = self.client.post()
             print(f"Client {self.client.id}: Epoch {self.client.epoch}, Loss: {loss}")
 

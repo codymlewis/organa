@@ -28,20 +28,38 @@ def create_client(client_id, addr, net, data, **kwargs):
     return client.Client(client_id, addr, net, data, **kwargs)
 
 
-def start_server(ip, port, net, k, fit_fun):
+def fed_avg(net, grads, **kwargs):
+    """
+    Perform federated averaging across the client gradients.
+
+    param net: The global model
+    param grads: Gradients from the clients
+    """
+    with torch.no_grad():
+        total_dc = sum([g["data_count"] for g in grads.values()])
+        for g in grads.values():
+            alpha = g["data_count"] / total_dc
+            for k, p in enumerate(net.parameters()):
+                p.data.add_(alpha * g["grads"][k])
+
+
+def start_server(ip, port, server_name, net, k, fit_fun=fed_avg):
     '''
     Create a FL server, set up the routes, and start it.
 
     param ip: IP of the host
     param port: Port of the host
+    param server_name: Name of the chosen server as per
+        http://bottlepy.org/docs/dev/deployment.html#switching-the-server-backend
     param net: Model to start with
     param k: Minimum number of clients to use for an update
     param fit_fun: Fitting function to use
     '''
+    print("Organa federated learning server")
     s = server.Server(net, k, fit_fun)
     bottle.route('/<epoch>')(s.send)
     bottle.route('/', method="POST")(s.get)
-    bottle.run(host=ip, port=port)
+    bottle.run(server=server_name, host=ip, port=port)
 
 
 class Model(nn.Module):
